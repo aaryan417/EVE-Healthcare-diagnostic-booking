@@ -14,8 +14,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend source code
 COPY . /app/
 
-# Make entrypoint script executable
-RUN chmod +x /app/docker-entrypoint.sh
+# Normalize line endings and make entrypoint script executable
+RUN sed -i 's/\r$//' /app/docker-entrypoint.sh \
+    && chmod +x /app/docker-entrypoint.sh
 
 EXPOSE 8000
 
