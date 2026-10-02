@@ -66,7 +66,7 @@ The repository includes a automated Docker Compose setup with health checks, aut
 ### Step 1: Clone Repository
 ```bash
 git clone https://github.com/aaryan417/EVE-Healthcare-diagnostic-booking
-cd eve-healthcare
+cd EVE-Healthcare-diagnostic-booking
 ```
 
 ### Step 2: Copy Environment File
