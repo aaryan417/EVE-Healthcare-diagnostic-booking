@@ -170,7 +170,7 @@ flowchart LR
     end
 
     subgraph Application["Application Tier"]
-        API["Django REST Framework\n(Python 3.13 / Gunicorn)"]
+        API["Django REST Framework\n(Python 3.13)"]
         Admin["Django Admin Console\n(Port 8001)"]
     end
 
@@ -200,6 +200,7 @@ flowchart LR
 | **Backend Framework** | Django | `5.1.4` | Web framework & ORM |
 | **API Framework** | Django REST Framework | `3.15.2` | RESTful API layer |
 | **Authentication** | djangorestframework-simplejwt | `5.3.1` | JWT access & refresh tokens |
+| **CORS Middleware** | django-cors-headers | `4.6.0` | Cross-origin request configuration |
 | **Database Adapter** | psycopg (binary) | `3.2.3` | PostgreSQL database driver |
 | **Database** | PostgreSQL | `15-alpine` | Relational database |
 | **API Documentation** | drf-spectacular | `0.28.0` | OpenAPI 3.0 schema & Swagger UI |
@@ -209,7 +210,7 @@ flowchart LR
 | **Build Tool** | Vite | `8.3.0` | Development server & production builder |
 | **Styling** | Tailwind CSS | `4.3.3` | Utility-first CSS framework |
 | **Icons & Utilities** | Lucide React / Axios | `1.49.0` / `1.20.0` | Icons & HTTP client |
-| **Containerization** | Docker & Docker Compose | Spec `3.8+` | Container orchestration |
+| **Containerization** | Docker & Docker Compose | N/A | Container orchestration |
 
 ---
 
@@ -761,6 +762,7 @@ eve-healthcare/
 - **Server-Side Validation**: All test fees and slot capacity limits are validated server-side.
 - **Multi-Tenant Isolation**: Scoped queries via `CentreMembership` prevent cross-centre data leakage.
 - **Database Safety**: Row locking (`select_for_update()`) and atomic transactions protect state transitions.
+- **CORS Configuration**: Configured via `django-cors-headers` (`CorsMiddleware`). Allowed origins are populated dynamically from the `CORS_ALLOWED_ORIGINS` environment variable (defaulting to local development and Docker client origins) with `CORS_ALLOW_CREDENTIALS=False` since API requests authenticate via Bearer JWT headers.
 - **Environment Disabling**: Demo account auto-seeding is controlled strictly by `SEED_DEMO_DATA=true`.
 
 ---
