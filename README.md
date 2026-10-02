@@ -214,20 +214,24 @@ flowchart LR
 
 ---
 
-## 8. Database Design & ER Diagram
+## Database Design & ER Diagram
 
 ```mermaid
 erDiagram
     User ||--o{ CentreMembership : "holds"
     User ||--o{ Booking : "places"
+
     DiagnosticCentre ||--o{ CentreMembership : "has"
     DiagnosticCentre ||--o{ CentreTest : "offers"
+
     DiagnosticTest ||--o{ CentreTest : "defines"
+
     CentreTest ||--o{ AppointmentSlot : "schedules"
     CentreTest ||--o{ Booking : "references"
+
     AppointmentSlot ||--o{ Booking : "reserves"
+
     Booking ||--o{ Payment : "generates"
-    WebhookEvent }|..|--|| Payment : "audits transaction"
 
     User {
         bigint id PK
