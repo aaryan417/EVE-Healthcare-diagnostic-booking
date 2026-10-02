@@ -1,0 +1,67 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: eve_healthcare_db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-eve_healthcare}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-eve_healthcare}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: eve_healthcare_backend
+    ports:
+      - "8001:8000"
+    environment:
+      - DEBUG=${DEBUG:-True}
+      - SECRET_KEY=${SECRET_KEY:-django-insecure-eve-healthcare-demo-secret-key-12345}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:3001,http://127.0.0.1:3001,http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173}
+      - DB_NAME=${DB_NAME:-eve_healthcare}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - DB_HOST=${DB_HOST:-db}
+      - DB_PORT=${DB_PORT:-5432}
+      - JWT_ACCESS_TOKEN_MINUTES=${JWT_ACCESS_TOKEN_MINUTES:-30}
+      - JWT_REFRESH_TOKEN_DAYS=${JWT_REFRESH_TOKEN_DAYS:-7}
+      - SEED_DEMO_DATA=${SEED_DEMO_DATA:-true}
+      - DEMO_PATIENT_EMAIL=${DEMO_PATIENT_EMAIL:-patient@example.com}
+      - DEMO_PATIENT_PASSWORD=${DEMO_PATIENT_PASSWORD:-PatientPass123!}
+      - DEMO_PATIENT_NAME=${DEMO_PATIENT_NAME:-Aaryan Verma}
+      - DEMO_CENTRE_ADMIN_EMAIL=${DEMO_CENTRE_ADMIN_EMAIL:-centreadmin_a@clinic.com}
+      - DEMO_CENTRE_ADMIN_PASSWORD=${DEMO_CENTRE_ADMIN_PASSWORD:-AdminPass123!}
+      - DEMO_CENTRE_ADMIN_NAME=${DEMO_CENTRE_ADMIN_NAME:-Centre Admin A}
+      - DEMO_SUPERUSER_EMAIL=${DEMO_SUPERUSER_EMAIL:-admin@evehealthcare.com}
+      - DEMO_SUPERUSER_PASSWORD=${DEMO_SUPERUSER_PASSWORD:-AdminPass123!}
+      - DEMO_SUPERUSER_NAME=${DEMO_SUPERUSER_NAME:-Demo Platform Admin}
+
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=/api/v1
+    container_name: eve_healthcare_frontend
+    ports:
+      - "3001:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
